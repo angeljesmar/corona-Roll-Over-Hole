@@ -6,6 +6,7 @@
 local physics = require( "physics" )
 local widget = require( "widget" )
 local composer = require( "composer" )
+undead = false
 
 local holeTable = {}
 local bonusTable = {}
@@ -35,9 +36,30 @@ local holeGroup
 local scoreText, jumpsText
 
 local function createSystemText()
-	scoreText = display.newText( uiGroup, "Score: " .. scores, 0, 500, native.systemFont, 22 )
+	local options = {
+	   width = 30,
+	   height = 30,
+	   numFrames = 17
+	}
+	local sheet = graphics.newImageSheet( "images/bonus.png", options )
+	local sequenceData = {
+	    name = "spinning",
+	    time = 1000,
+	    start = 1, 
+	    count = 17
+	}
+ 
+ 	local bonus = display.newSprite( sheet, sequenceData )
+ 	bonus.anchorX = 0
+ 	bonus.x = 0
+ 	bonus.y = 500
+ 	uiGroup:insert( bonus )
+ 	bonus:play()
+
+	scoreText = display.newText( uiGroup, scores, 30, 500, native.systemFont, 22 )
 	scoreText.anchorX = 0
 	table.insert( uiGroup, scoreText )
+	
 
 	jumpsText = display.newText( uiGroup, "Jumps: " .. jumpsCount, 0, 0, native.systemFont, 16 )
 	jumpsText.anchorX = 0
@@ -45,7 +67,7 @@ local function createSystemText()
 end
 
 local function updateScores()
-    scoreText.text = "Score: " .. scores .. "(" .. rohSettings.highscore .. ")"
+    scoreText.text = scores .. "(" .. rohSettings.highscore .. ")"
 end
 
 local function updateJumps()
@@ -238,7 +260,7 @@ local function onCollision( event )
 		if ( ( obj1.name == "ball" and obj2.name == "hole" ) or
              ( obj1.name == "hole" and obj2.name == "ball" ) ) 
 		then 
-			if not ball.isJumping then
+			if not ball.isJumping and not undead then
 				showHowBitchDie( obj1.name == "hole" and obj1 or obj2 )
 			end
 		elseif ( ( obj1.name == "ball" and obj2.name == "bonus" ) or
@@ -292,19 +314,48 @@ end
 
 local function generateBonus( )
 	local function createBonus( bonusType )
-		local bonus = display.newCircle( bonusGroup, 0, -90, 15 )
+		local bonus
+		if bonusType == 3 then
+			local options = {
+			   width = 30,
+			   height = 30,
+			   numFrames = 17
+			}
+			local sheet = graphics.newImageSheet( "images/bonus.png", options )
+			local sequenceData = {
+			    name = "spinning",
+			    time = 1000,
+			    start = 1, 
+			    count = 17
+			}
+		 
+		 	bonus = display.newSprite( sheet, sequenceData )
+		 	bonus.y = -90
+			bonusGroup:insert(bonus)
+
+			bonus:play()
+		else 
+			bonus = display.newCircle( bonusGroup, 0, -90, 15 )
+			
+			bonus:setFillColor( 0, 1, 0 )
+			bonus.strokeWidth = 4
+
+			-- 0 - blue - jump, 1 - red - slowmotion, 2 - yellow - bonus
+			local stroke = function() 
+			 	if bonusType == 1 then 
+			 		return 0, 0, 1 
+			 	elseif bonusType == 2 then 
+			 		return 1, 0, 0 
+			 	elseif bonusType == 3 then 
+			 		return 1, 1, 0 
+			 	end
+			end
+			bonus:setStrokeColor( stroke() )
+		end
+		
 		bonus.name = "bonus"
 		bonus.bonusType = bonusType
-		bonus:setFillColor( 0, 1, 0 )
-		bonus.strokeWidth = 4
-		-- 0 - blue - jump, 1 - red - slowmotion, 2 - yellow - bonus
-		local stroke = function() 
-		 	if bonusType == 1 then return 0, 0, 1 
-		 		elseif bonusType == 2 then return 1, 0, 0 
-		 			elseif bonusType == 3 then return 1, 1, 0 end
-		end
 
-		bonus:setStrokeColor( stroke() )
 		bonus.setSpeed = function( self, speed )
 			self:setLinearVelocity( 0, speed * speedScale )
 		end
@@ -318,7 +369,7 @@ local function generateBonus( )
 		bonus.isSensor = true
 		bonus:setSpeed( speed )
 	end
-	createBonus(math.random(3))
+	createBonus(3)
 	for i = #bonusTable, 1, -1 do
         local bonus = bonusTable[i]
         if bonus.collected then 

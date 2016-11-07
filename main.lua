@@ -7,7 +7,17 @@ local settings = require("settings")
 local preferences = require( "preference" )
 local ads = require( "ads" )
 
-local function onAdsReady()
+local function onAdsReady(event)
+    local msg = event.response
+    -- Quick debug message regarding the response from the library
+    print( "Message from the ads library: ", msg )
+ 
+    if ( event.isError ) then
+        print( "Error, no ad received", msg )
+    else
+        print( "Ah ha! Got one!" )
+    end
+
 	ads.show( "banner", { x=display.contentWidth/2, y=460, testMode=true } )
 end
 
