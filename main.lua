@@ -8,20 +8,15 @@ local preferences = require( "preference" )
 local ads = require( "ads" )
 
 local function onAdsReady(event)
-    local msg = event.response
-    -- Quick debug message regarding the response from the library
-    print( "Message from the ads library: ", msg )
- 
-    if ( event.isError ) then
-        print( "Error, no ad received", msg )
-    else
-        print( "Ah ha! Got one!" )
-    end
-
-	ads.show( "banner", { x=display.contentWidth/2, y=460, testMode=true } )
+    print("event from ads " .. event)
 end
 
+bannerAppID = "ca-app-pub-3419733645071199/4237594663"
+interstitialAppID = "ca-app-pub-3419733645071199/3127461465"
+
 ads.init( "admob", "ca-app-pub-3419733645071199~2867096264", onAdsReady )
+-- ads.init( "admob", interstitialAppID, onAdsReady )
+
 rohSettings = preferences.getValue( "settings" )
 function commitSettings( )
 	-- saveTable(rohSettings, "rohSettings.json")

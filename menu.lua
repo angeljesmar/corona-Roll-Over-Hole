@@ -1,12 +1,17 @@
 local widget = require( "widget" )
 local composer = require( "composer" )
+local ads = require( "ads" )
+
 local scene = composer.newScene()
 local uiGroup = display.newGroup()
 
 local function createPlayButton( )
     
     local btn = widget.newButton ( {
-        label="Грати",x=display.contentWidth/2, y=10, onRelease=function() composer.gotoScene("game") end
+        label="Грати",x=display.contentWidth/2, y=10, onRelease=function() 
+            ads.show( "interstitial", { appId=interstitialAppID } )
+            composer.gotoScene("game") 
+        end
     })
     
     uiGroup:insert( btn )
@@ -31,6 +36,8 @@ end
 
 -- create()
 function scene:create( event )
+    ads.show( "banner", { x=0 , y=460, appId=bannerAppID } )
+
     createSettingsButton()
     createPlayButton()
     -- createLeadershipButton()

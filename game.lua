@@ -39,14 +39,14 @@ local function createSystemText()
 	local options = {
 	   width = 30,
 	   height = 30,
-	   numFrames = 17
+	   numFrames = 20
 	}
 	local sheet = graphics.newImageSheet( "images/bonus.png", options )
 	local sequenceData = {
 	    name = "spinning",
 	    time = 1000,
 	    start = 1, 
-	    count = 17
+	    count = 20
 	}
  
  	local bonus = display.newSprite( sheet, sequenceData )
@@ -319,14 +319,14 @@ local function generateBonus( )
 			local options = {
 			   width = 30,
 			   height = 30,
-			   numFrames = 17
+			   numFrames = 20
 			}
 			local sheet = graphics.newImageSheet( "images/bonus.png", options )
 			local sequenceData = {
 			    name = "spinning",
 			    time = 1000,
 			    start = 1, 
-			    count = 17
+			    count = 20
 			}
 		 
 		 	bonus = display.newSprite( sheet, sequenceData )
@@ -369,7 +369,7 @@ local function generateBonus( )
 		bonus.isSensor = true
 		bonus:setSpeed( speed )
 	end
-	createBonus(3)
+	createBonus(math.random(3))
 	for i = #bonusTable, 1, -1 do
         local bonus = bonusTable[i]
         if bonus.collected then 
