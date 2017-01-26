@@ -36,34 +36,21 @@ local holeGroup
 local scoreText, jumpsText
 
 local function createSystemText()
-	local options = {
-	   width = 30,
-	   height = 30,
-	   numFrames = 20
-	}
-	local sheet = graphics.newImageSheet( "images/bonus.png", options )
-	local sequenceData = {
-	    name = "spinning",
-	    time = 1000,
-	    start = 1, 
-	    count = 20
-	}
- 
- 	local bonus = display.newSprite( sheet, sequenceData )
- 	bonus.anchorX = 0
- 	bonus.x = 0
- 	bonus.y = 500
- 	uiGroup:insert( bonus )
- 	bonus:play()
+	local score = display.newImage( uiGroup, "images/scope.png" )
+ 	
+ 	score.anchorX = 0
+ 	
+ 	score.x = 0
+ 	score.y = 0
 
-	scoreText = display.newText( uiGroup, scores, 30, 500, native.systemFont, 22 )
+	scoreText = display.newText( uiGroup, scores, score.contentWidth, 500, native.systemFont, 22 )
 	scoreText.anchorX = 0
 	table.insert( uiGroup, scoreText )
 	
 
-	jumpsText = display.newText( uiGroup, "Jumps: " .. jumpsCount, 0, 0, native.systemFont, 16 )
-	jumpsText.anchorX = 0
-	table.insert( uiGroup, jumpsText )
+	-- jumpsText = display.newText( uiGroup, "Jumps: " .. jumpsCount, 0, 0, native.systemFont, 16 )
+	-- jumpsText.anchorX = 0
+	-- table.insert( uiGroup, jumpsText )
 end
 
 local function updateScores()
@@ -71,21 +58,21 @@ local function updateScores()
 end
 
 local function updateJumps()
-	jumpsText.text = "Jumps: " .. jumpsCount .. "(max = " .. maxJumps .. ")"
+	-- jumpsText.text = "Jumps: " .. jumpsCount .. "(max = " .. maxJumps .. ")"
 end
 
 local function createBall()
 	local options = {
 	   width = 30,
 	   height = 30,
-	   numFrames = 10
+	   numFrames = 3
 	}
 	local sheet = graphics.newImageSheet( "images/ball.png", options )
 	local sequenceData = {
 	    name = "rolling",
-	    time = 500,
+	    time = 250,
 	    start = 1, 
-	    count = 9
+	    count = 3
 	}
  
  	ball = display.newSprite( sheet, sequenceData )
@@ -250,7 +237,6 @@ local function showHowBitchDie( hole )
 			showDieAlert()
 		end} )
 	end} )
-
 end
 
 local function onCollision( event )
@@ -315,44 +301,17 @@ end
 local function generateBonus( )
 	local function createBonus( bonusType )
 		local bonus
+		
 		if bonusType == 3 then
-			local options = {
-			   width = 30,
-			   height = 30,
-			   numFrames = 20
-			}
-			local sheet = graphics.newImageSheet( "images/bonus.png", options )
-			local sequenceData = {
-			    name = "spinning",
-			    time = 1000,
-			    start = 1, 
-			    count = 20
-			}
-		 
-		 	bonus = display.newSprite( sheet, sequenceData )
-		 	bonus.y = -90
-			bonusGroup:insert(bonus)
-
-			bonus:play()
-		else 
-			bonus = display.newCircle( bonusGroup, 0, -90, 15 )
-			
-			bonus:setFillColor( 0, 1, 0 )
-			bonus.strokeWidth = 4
-
-			-- 0 - blue - jump, 1 - red - slowmotion, 2 - yellow - bonus
-			local stroke = function() 
-			 	if bonusType == 1 then 
-			 		return 0, 0, 1 
-			 	elseif bonusType == 2 then 
-			 		return 1, 0, 0 
-			 	elseif bonusType == 3 then 
-			 		return 1, 1, 0 
-			 	end
-			end
-			bonus:setStrokeColor( stroke() )
+			bonus = display.newImage( "images/coin.png" )
+		elseif bonusType == 2 then
+			bonus = display.newImage( "images/wing.png" ) 
+		elseif bonusType == 1 then
+			bonus = display.newImage( "images/slow_motion.png" )
 		end
 		
+		bonusGroup:insert( bonus )
+
 		bonus.name = "bonus"
 		bonus.bonusType = bonusType
 
@@ -362,6 +321,7 @@ local function generateBonus( )
 
 		x = math.random(320)
 		bonus.x = x
+		bonus.y = -90
 		
 		table.insert( bonusTable, bonus )
 		bonus.index = #bonusTable
@@ -369,6 +329,7 @@ local function generateBonus( )
 		bonus.isSensor = true
 		bonus:setSpeed( speed )
 	end
+
 	createBonus(math.random(3))
 	for i = #bonusTable, 1, -1 do
         local bonus = bonusTable[i]

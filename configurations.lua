@@ -96,7 +96,7 @@ end
 
 -- show()
 function scene:show( event )
-
+    bg.isVisible = false
     local sceneGroup = self.view
     local phase = event.phase
 
@@ -110,7 +110,7 @@ end
 
 -- hide()
 function scene:hide( event )
-
+    bg.isVisible = true
     local sceneGroup = self.view
     local phase = event.phase
 

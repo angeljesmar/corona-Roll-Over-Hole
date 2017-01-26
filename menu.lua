@@ -8,11 +8,16 @@ local uiGroup = display.newGroup()
 local function createPlayButton( )
     
     local btn = widget.newButton ( {
-        label="Грати",x=display.contentWidth/2, y=10, onRelease=function() 
+        width = 172,
+        height = 180,
+        defaultFile = "images/play.png",
+        x=display.contentWidth/2, 
+        y=95, 
+        onRelease=function() 
             ads.show( "interstitial", { appId=interstitialAppID } )
             composer.gotoScene("game") 
         end
-    })
+    } )
     
     uiGroup:insert( btn )
 
@@ -20,7 +25,7 @@ end
 
 local function createSettingsButton( )
     local btn = widget.newButton ( {
-        label="Налаштування",x=display.contentWidth/2, y=50, onRelease=function() composer.gotoScene("configurations") end
+        label="Налаштування",x=display.contentWidth/2, y=190, onRelease=function() composer.gotoScene("configurations") end
     })
     
     uiGroup:insert( btn )
@@ -38,8 +43,9 @@ end
 function scene:create( event )
     ads.show( "banner", { x=0 , y=460, appId=bannerAppID } )
 
-    createSettingsButton()
     createPlayButton()
+    createSettingsButton()
+    
     -- createLeadershipButton()
 end
 

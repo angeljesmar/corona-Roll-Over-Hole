@@ -39,10 +39,10 @@ end
 
 display.setStatusBar( display.HiddenStatusBar )
 
-local image = display.newImageRect( "images/bg.png",
+bg = display.newImageRect( "images/bg.png",
                display.contentWidth, display.contentHeight * 2) 
-image.x = display.contentCenterX
-image.y = display.contentCenterY
+bg.x = display.contentCenterX
+bg.y = display.contentCenterY
 
 local function main()
 	local composer = require("composer")
