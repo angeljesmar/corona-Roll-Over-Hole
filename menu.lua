@@ -11,6 +11,7 @@ local function createPlayButton( )
         width = 172,
         height = 180,
         defaultFile = "images/play.png",
+        overFile = "images/play_pressed.png",
         x=display.contentWidth/2, 
         y=95, 
         onRelease=function() 

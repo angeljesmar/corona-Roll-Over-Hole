@@ -6,6 +6,8 @@
 local physics = require( "physics" )
 local widget = require( "widget" )
 local composer = require( "composer" )
+
+local scene = composer.newScene()
 undead = false
 
 local holeTable = {}
@@ -36,7 +38,7 @@ local holeGroup
 local scoreText, jumpsText
 
 local function createSystemText()
-	local score = display.newImage( uiGroup, "images/scope.png" )
+	local score = display.newImage( uiGroup, "images/score.png" )
  	
  	score.anchorX = 0
  	
@@ -192,17 +194,24 @@ local function onAccelerate( event )
 end
 
 local function showDieAlert( )
-	local function onComplete( event )
-	    if ( event.action == "clicked" ) then
-	        local i = event.index
-	        if ( i == 1 ) then
-	            startGame( )
-	        elseif ( i == 2 ) then
-	            composer.gotoScene( "menu" )
-	        end
-	    end
+	local function onComplete( i )
+        if ( i == 1 ) then
+            startGame( )
+        elseif ( i == 2 ) then
+            composer.gotoScene( "menu" )
+        end
+        scene.onComplete = nil
 	end
-	local alert = native.showAlert( "End", "You died", { "Retry", "Finish" }, onComplete )
+	local options = {
+	    isModal = true,
+	    effect = "fade",
+	    time = 400
+	}
+	scene.onComplete = onComplete
+ 
+-- By some method (a pause button, for example), show the overlay
+	composer.showOverlay( "retry", options )
+	-- local alert = native.showAlert( "End", "You died", { "Retry", "Finish" }, onComplete )
 end
 
 local function collectBonus( bonusType )
@@ -400,11 +409,6 @@ function stopGame()
 	speed = 0
 	scores = 0
 end
-
-local composer = require( "composer" )
-
-local scene = composer.newScene()
-
 
 function scene:create( event )
 	physics.start()
