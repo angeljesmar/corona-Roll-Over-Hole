@@ -34,33 +34,66 @@ local mainGroup
 local bonusGroup
 local uiGroup
 local holeGroup
+local scoresGroup
+local jumpsGroup
 
-local scoreText, jumpsText
+local jumpsText
 
 local function createSystemText()
-	local score = display.newImage( uiGroup, "images/score.png" )
+	score = display.newImageRect( uiGroup, "images/score.png", 100, 30 )
  	
  	score.anchorX = 0
  	
  	score.x = 0
  	score.y = 0
 
-	scoreText = display.newText( uiGroup, scores, score.contentWidth, 500, native.systemFont, 22 )
-	scoreText.anchorX = 0
-	table.insert( uiGroup, scoreText )
-	
+ 	local jumps = display.newImageRect ( uiGroup, "images/wing.png", 30, 30 )
 
-	-- jumpsText = display.newText( uiGroup, "Jumps: " .. jumpsCount, 0, 0, native.systemFont, 16 )
-	-- jumpsText.anchorX = 0
-	-- table.insert( uiGroup, jumpsText )
+ 	jumps.anchorX = 0
+
+ 	jumps.x = 0
+ 	jumps.y = score.contentHeight + 5
+end
+
+local function divideWithRemainder(a, b)
+	if not a then return 0 end
+	local divResult = math.floor(a/b)
+	local remainder = a - divResult * b 
+	return divResult, remainder
+end
+
+local function printNumbers(numbers, x, y, group)
+	local arr = {}
+	while (numbers ~= 0) do
+		numbers, remainder = divideWithRemainder(numbers, 10)
+		table.insert(arr, remainder)
+	end
+	if #arr == 0 then table.insert(arr, 0) end
+	for i = #arr,1,-1 do
+		local scoreImg = display.newImageRect( group, "images/numbers/"..arr[i]..".png", 20, 30 )
+		scoreImg.anchorX = 0
+
+		scoreImg.x = x
+		scoreImg.y = y
+
+		x = x + 20
+	end
 end
 
 local function updateScores()
-    scoreText.text = scores .. "(" .. rohSettings.highscore .. ")"
+	scoresGroup:removeSelf()
+	scoresGroup = nil
+	scoresGroup = display.newGroup()
+	local padding = score.contentWidth
+	printNumbers(scores, padding, 0, scoresGroup)
+	printNumbers(rohSettings.highscore, display.contentWidth - 100, 0, uiGroup)
 end
 
 local function updateJumps()
-	-- jumpsText.text = "Jumps: " .. jumpsCount .. "(max = " .. maxJumps .. ")"
+	jumpsGroup:removeSelf()
+	jumpsGroup = nil
+	jumpsGroup = display.newGroup()
+	printNumbers(jumpsCount, 30, 35, jumpsGroup)
 end
 
 local function createBall()
@@ -117,10 +150,8 @@ local function createBall()
 end
 
 local function createHole()
-	local hole = display.newImage( "images/hole.png" )
+	local hole = display.newImageRect( holeGroup, "images/hole.png", 30, 30)
 	hole.name = "hole"
-
-	holeGroup:insert( hole )
 
 	hole.setSpeed = function( self, speed )
 		self:setLinearVelocity( 0, speed * speedScale )
@@ -312,14 +343,12 @@ local function generateBonus( )
 		local bonus
 		
 		if bonusType == 3 then
-			bonus = display.newImage( "images/coin.png" )
+			bonus = display.newImageRect( bonusGroup, "images/coin.png", 30, 30 )
 		elseif bonusType == 2 then
-			bonus = display.newImage( "images/wing.png" ) 
+			bonus = display.newImageRect( bonusGroup, "images/wing.png", 30, 30 ) 
 		elseif bonusType == 1 then
-			bonus = display.newImage( "images/slow_motion.png" )
+			bonus = display.newImageRect( bonusGroup, "images/slow_motion.png", 30, 30 )
 		end
-		
-		bonusGroup:insert( bonus )
 
 		bonus.name = "bonus"
 		bonus.bonusType = bonusType
@@ -357,6 +386,8 @@ function startGame()
 	bonusGroup = display.newGroup() 
 	uiGroup = display.newGroup() 
 	holeGroup = display.newGroup()
+	scoresGroup = display.newGroup()
+	jumpsGroup = display.newGroup()
 
     createSystemText()
 	addBorders()
@@ -375,6 +406,8 @@ function startGame()
 	bonusLoopTimer = timer.performWithDelay( bonusFrequency * 1000, generateBonus, 0)
 	Runtime:addEventListener( "collision", onCollision )
 	Runtime:addEventListener( "accelerometer", onAccelerate )
+
+    -- addGravityController()
 end
 
 function stopGame()
@@ -391,12 +424,15 @@ function stopGame()
 	bonusGroup:removeSelf()
 	uiGroup:removeSelf()
 	backGroup:removeSelf()
+	scoresGroup:removeSelf()
+	jumpsGroup:removeSelf()
 
 	mainGroup = nil
 	bonusGroup = nil
 	uiGroup = nil
 	holeGroup = nil
 	backGroup = nil
+	scoresGroup = nil
 
 	holeTable = {}
 	bonusTable = {}
@@ -417,7 +453,6 @@ function scene:create( event )
 	math.randomseed( os.time() )
 
     local sceneGroup = self.view
-    -- addGravityController()
 
 	system.setAccelerometerInterval( 50 );
 end
